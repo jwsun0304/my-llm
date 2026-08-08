@@ -1,0 +1,11 @@
+.claude/settings.local.json
+__pycache__/
+*.pyc
+.venv/
+venv/
+checkpoints/*.pt
+checkpoints/*.pth
+data/*.txt
+!data/.gitkeep
+.ipynb_checkpoints/
+*.egg-info/
