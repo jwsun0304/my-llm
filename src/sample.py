@@ -15,7 +15,7 @@ def main():
     stoi = {ch: i for i, ch in enumerate(chars)}
     itos = {i: ch for i, ch in enumerate(chars)}
 
-    checkpoint = torch.load(os.path.join(CKPT_DIR, "ckpt.pt"), map_location=DEVICE)
+    checkpoint = torch.load(os.path.join(CKPT_DIR, "ckpt.pt"), map_location=DEVICE, weights_only=False)
     model = GPT(checkpoint["config"]).to(DEVICE)
     model.load_state_dict(checkpoint["model"])
     model.eval()
