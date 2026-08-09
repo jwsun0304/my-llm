@@ -13,5 +13,6 @@ data/rtl_project/ECDH/*.docx
 data/rtl_project/ECDH/*.pdf
 data/rtl_project/ECDH/*.pptx
 data/rtl_project/lbist/LBIST_AI_RTL_Report.pdf
+data/rtl_project/ECDH/curve25519.v
 .ipynb_checkpoints/
 *.egg-info/

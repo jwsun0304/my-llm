@@ -35,7 +35,7 @@ top_ecdh_axi (AXI-Stream, mode로 동작 선택)
 | `mult_mod_25519.v` | 모듈러 곱셈기. 비교기 없이 MUX 기반 최종 보정으로 최적화 |
 | `mod_reducer_25519.v` | p = 2^255 - 19의 특수한 형태를 이용한 별도의 축소(reduction) 모듈 |
 | `inversion_25519.v` | 페르마의 소정리(Z^(p-2) mod p) 기반 모듈러 역원 계산, square-and-multiply 방식 |
-| `curve25519.v` | 참고/비교용 대안 구현체 (다른 포트 인터페이스, 고정 레이턴시 파이프라인 가정 — 본인 최종 설계와는 별개로 검토했던 버전으로 추정, 출처 재확인 필요) |
+| `curve25519.v` | 참고용으로 검토했던 타인 구현체. 출처: [andres-erbsen/curve25519-verilog](https://github.com/andres-erbsen/curve25519-verilog/blob/master/curve25519.v). 본인 코드가 아니며 라이선스 미확인이라 git에는 포함하지 않고 로컬에만 보관 |
 | `inversion_255.v` | 주석이 없어 용도 불명. 실험/미사용 파일로 추정 |
 | `PQC_KEM.c` | 본인이 작성한 호스트 측 C 드라이버. **연구실 FPGA 보드와 통신하기 위한 코드**로, Vivado AXI DMA 레지스터를 직접 제어해 가속기에 입력을 보내고 결과를 받아옴 |
 
@@ -47,5 +47,4 @@ top_ecdh_axi (AXI-Stream, mode로 동작 선택)
   다양한 케이스로 추가 검증 (출처: `테스트벡터 출처.txt`)
 
 ---
-*이 문서는 소스 코드를 읽고 자동 생성한 초안입니다. `curve25519.v`의 출처 등
-추정으로 표시한 부분은 검토 후 직접 수정해 주세요.*
+*이 문서는 소스 코드를 읽고 자동 생성한 초안입니다.*
