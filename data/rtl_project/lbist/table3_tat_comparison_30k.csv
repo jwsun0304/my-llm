@@ -1,0 +1,4 @@
+Condition,# patterns to reach target,Change vs Fixed-T(256) (%)
+Fixed-T(T=256),30000,+0.00
+Fixed-T(T=1024),not reached within 30000,-
+Adaptive-T,not reached within 30000,-

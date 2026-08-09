@@ -7,5 +7,10 @@ checkpoints/*.pt
 checkpoints/*.pth
 data/*.txt
 !data/.gitkeep
+**/references/
+data/rtl_project/lbist/controller_dataset.csv
+data/rtl_project/ECDH/*.docx
+data/rtl_project/ECDH/*.pdf
+data/rtl_project/ECDH/*.pptx
 .ipynb_checkpoints/
 *.egg-info/

@@ -1,0 +1,39 @@
+{
+  "config": {
+    "T_init": 128,
+    "delta_T": 128,
+    "alpha": 0.95,
+    "K": 3,
+    "W": 16,
+    "calib_multiplier": 1.5
+  },
+  "per_circuit": {
+    "s1494": {
+      "final_coverage": 51.267605633802816,
+      "patterns_to_reach": null,
+      "speed_frac": 1.0,
+      "num_transitions": 7
+    },
+    "s5378": {
+      "final_coverage": 89.31638612160769,
+      "patterns_to_reach": null,
+      "speed_frac": 1.0,
+      "num_transitions": 7
+    },
+    "s9234": {
+      "final_coverage": 50.866798332236115,
+      "patterns_to_reach": null,
+      "speed_frac": 1.0,
+      "num_transitions": 7
+    },
+    "s13207": {
+      "final_coverage": 59.39507914120043,
+      "patterns_to_reach": null,
+      "speed_frac": 1.0,
+      "num_transitions": 7
+    }
+  },
+  "avg_coverage": 62.71146730721176,
+  "avg_speed_frac": 1.0,
+  "score": 62.701467307211765
+}

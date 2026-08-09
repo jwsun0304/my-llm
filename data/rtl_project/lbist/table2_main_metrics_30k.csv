@@ -1,0 +1,6 @@
+Parameter,Fixed-T(T=256),Fixed-T(T=1024),Adaptive-T
+Final coverage (%),96.459,94.199,94.348
+Detected faults,5803,5667,5676
+Total faults,6016,6016,6016
+T transitions,0,0,7
+Elapsed sec,136.0,147.6,218.6

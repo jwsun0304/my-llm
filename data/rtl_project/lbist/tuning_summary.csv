@@ -1,0 +1,16 @@
+Condition,Final coverage (%),Detected,Total
+Fixed-T(256),94.229,2743,2911
+Fixed-T(1024),85.297,2483,2911
+"Best Fixed-T (sweep, T=32)",96.393,2806,2911
+Adaptive-T (default params),88.217,2568,2911
+Adaptive-T (tuned: trial_3),95.534,2781,2911
+
+Verdict:,BEST-FIXED-T WINS
+
+Best tuned adaptive hyperparameters:
+T_init,64
+delta_T,96
+alpha,0.85
+K,2
+W,32
+calib_multiplier,1.5
