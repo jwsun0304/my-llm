@@ -10,13 +10,13 @@ module tb_top_x25519_wrapper;
     wire        out_valid;
     wire        busy;
 
-    // --- RFC 8037 Appendix A.6 Ç¥ÁØ Å×½ºÆ® º¤ÅÍ ---
+    // --- RFC 8037 Appendix A.6 í‘œì¤€ í…ŒìŠ¤íŠ¸ ë²¡í„° ---
     reg [255:0] test_scalar = 256'h77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a;
     reg [255:0] test_base   = 256'hde9edb7d7b7dc1b4d35b61c2ece435373f8343c85b78674dadfc7e146f882b4f;
     reg [255:0] expected    = 256'h4a5d9d5ba4ce2de1728e3bf480350f25e07e21c947d19e3376f09b3c1e161742;
     reg [255:0] actual_res;
 
-    // ¼³°è ¸ğµâ ¿¬°á
+    // ì„¤ê³„ ëª¨ë“ˆ ì—°ê²°
     top_x25519_wrapper uut (
         .clk(clk),
         .rst_n(rst_n),
@@ -27,19 +27,19 @@ module tb_top_x25519_wrapper;
         .busy(busy)
     );
 
-    // --- Å¬·° »ı¼º: ÁÖ±â 2ns (500MHz) ---
-    // #1¸¶´Ù ¹İÀü½ÃÅ°¸é High 1ns + Low 1ns = ÃÑ 2ns°¡ µË´Ï´Ù.
+    // --- í´ëŸ­ ìƒì„±: ì£¼ê¸° 2ns (500MHz) ---
+    // #1ë§ˆë‹¤ ë°˜ì „ì‹œí‚¤ë©´ High 1ns + Low 1ns = ì´ 2nsê°€ ë©ë‹ˆë‹¤.
     always #1 clk = ~clk;
 
     initial begin
-        // ÃÊ±âÈ­
+        // ì´ˆê¸°í™”
         clk = 0; rst_n = 0; start = 0; din = 0; actual_res = 0;
         
-        // ¸®¼Â ±â°£ (Å¬·° ÁÖ±â¿¡ ¸ÂÃç Á¶Á¤)
+        // ë¦¬ì…‹ ê¸°ê°„ (í´ëŸ­ ì£¼ê¸°ì— ë§ì¶° ì¡°ì •)
         #10 rst_n = 1;
         #10;
 
-        // --- STEP 1: Scalar ÀÔ·Â (64bit x 4Å¬·°) ---
+        // --- STEP 1: Scalar ì…ë ¥ (64bit x 4í´ëŸ­) ---
         @(posedge clk);
         start = 1;
         din = test_scalar[63:0];
@@ -54,7 +54,7 @@ module tb_top_x25519_wrapper;
         @(posedge clk);
         din = test_scalar[255:192];
 
-        // --- STEP 2: Base ÀÔ·Â (64bit x 4Å¬·°) ---
+        // --- STEP 2: Base ì…ë ¥ (64bit x 4í´ëŸ­) ---
         @(posedge clk);
         din = test_base[63:0];
         
@@ -70,12 +70,12 @@ module tb_top_x25519_wrapper;
         @(posedge clk);
         din = 0;
 
-        // --- STEP 3: ¿¬»ê ´ë±â ---
+        // --- STEP 3: ì—°ì‚° ëŒ€ê¸° ---
         $display("[%t] 500MHz (2ns) RFC Test Started...", $time);
         wait(out_valid == 1);
         
-        // --- STEP 4: °á°ú ¼öÁı (64bit x 4Å¬·°) ---
-        @(posedge clk); // out_valid È®ÀÎ ÈÄ Ã¹ ¹øÂ° µ¥ÀÌÅÍ ·¡Ä¡
+        // --- STEP 4: ê²°ê³¼ ìˆ˜ì§‘ (64bit x 4í´ëŸ­) ---
+        @(posedge clk); // out_valid í™•ì¸ í›„ ì²« ë²ˆì§¸ ë°ì´í„° ë˜ì¹˜
         actual_res[63:0] = dout;
         
         @(posedge clk);
@@ -87,7 +87,7 @@ module tb_top_x25519_wrapper;
         @(posedge clk);
         actual_res[255:192] = dout;
 
-        // --- STEP 5: ÃÖÁ¾ °ËÁõ ---
+        // --- STEP 5: ìµœì¢… ê²€ì¦ ---
         #4;
         $display("\n========================================================");
         $display("RFC 8037 X25519 ECDH-ES Verification (@500MHz)");

@@ -2,32 +2,32 @@
 module top_x25519_wrapper (
     input  wire        clk,
     input  wire        rst_n,
-    input  wire        start,      // ÀÔ·ÂÀ» ½ÃÀÛÇÏ¶ó´Â ½ÅÈ£
-    input  wire [63:0] din,        // 64ºñÆ® ÀÔ·Â ¹ö½º (Scalar -> Base ¼ø¼­)
-    output wire [63:0] dout,       // 64ºñÆ® Ãâ·Â ¹ö½º
-    output wire        out_valid,  // °á°ú°¡ ³ª°¡´Â 4Å¬·° µ¿¾È Áï½Ã High
-    output reg         busy        // ¸ğµâ µ¿ÀÛ Áß Ç¥½Ã
+    input  wire        start,      // ì…ë ¥ì„ ì‹œì‘í•˜ë¼ëŠ” ì‹ í˜¸
+    input  wire [63:0] din,        // 64ë¹„íŠ¸ ì…ë ¥ ë²„ìŠ¤ (Scalar -> Base ìˆœì„œ)
+    output wire [63:0] dout,       // 64ë¹„íŠ¸ ì¶œë ¥ ë²„ìŠ¤
+    output wire        out_valid,  // ê²°ê³¼ê°€ ë‚˜ê°€ëŠ” 4í´ëŸ­ ë™ì•ˆ ì¦‰ì‹œ High
+    output reg         busy        // ëª¨ë“ˆ ë™ì‘ ì¤‘ í‘œì‹œ
 );
 
-    // FSM »óÅÂ Á¤ÀÇ
+    // FSM ìƒíƒœ ì •ì˜
     localparam IDLE        = 3'd0;
-    localparam LOAD_SCALAR = 3'd1; // Scalar 64bit x 4Å¬·° ·Îµå
-    localparam LOAD_BASE   = 3'd2; // Base   64bit x 4Å¬·° ·Îµå
-    localparam CALC        = 3'd3; // ³»ºÎ Core ¿¬»ê ´ë±â
-    localparam UNLOAD      = 3'd4; // °á°ú 64bit x 4Å¬·° Ãâ·Â
+    localparam LOAD_SCALAR = 3'd1; // Scalar 64bit x 4í´ëŸ­ ë¡œë“œ
+    localparam LOAD_BASE   = 3'd2; // Base   64bit x 4í´ëŸ­ ë¡œë“œ
+    localparam CALC        = 3'd3; // ë‚´ë¶€ Core ì—°ì‚° ëŒ€ê¸°
+    localparam UNLOAD      = 3'd4; // ê²°ê³¼ 64bit x 4í´ëŸ­ ì¶œë ¥
 
     reg [2:0]   state;
-    reg [1:0]   cnt;               // 4Å¬·° Ä«¿îÅÍ
+    reg [1:0]   cnt;               // 4í´ëŸ­ ì¹´ìš´í„°
     reg [255:0] scalar_reg;
     reg [255:0] base_reg;
     reg [255:0] result_reg;
 
-    // ³»ºÎ ¿£Áø(top_x25519) ¿¬°á ½ÅÈ£
+    // ë‚´ë¶€ ì—”ì§„(top_x25519) ì—°ê²° ì‹ í˜¸
     reg         engine_start;
     wire        engine_done;
     wire [255:0] engine_out;
 
-    // --- ±âÁ¸ °èÃş ±¸Á¶ À¯Áö: u_top È£Ãâ ---
+    // --- ê¸°ì¡´ ê³„ì¸µ êµ¬ì¡° ìœ ì§€: u_top í˜¸ì¶œ ---
     top_x25519 u_top (
         .clk(clk),
         .rst_n(rst_n),
@@ -38,10 +38,10 @@ module top_x25519_wrapper (
         .result_x(engine_out)
     );
 
-    // UNLOAD »óÅÂ°¡ µÇ´Â Áï½Ã 1ÀÌ µÊ
+    // UNLOAD ìƒíƒœê°€ ë˜ëŠ” ì¦‰ì‹œ 1ì´ ë¨
     assign out_valid = (state == UNLOAD);
 
-    // Ä«¿îÅÍ 0ÀÏ ¶§ Áï½Ã Ã¹ Á¶°¢ Ãâ·Â
+    // ì¹´ìš´í„° 0ì¼ ë•Œ ì¦‰ì‹œ ì²« ì¡°ê° ì¶œë ¥
     assign dout = (state == UNLOAD) ? (
                   (cnt == 2'd0) ? result_reg[63:0]   :
                   (cnt == 2'd1) ? result_reg[127:64] :
@@ -58,7 +58,7 @@ module top_x25519_wrapper (
             base_reg     <= 0;
             result_reg   <= 0;
         end else begin
-            engine_start <= 0; // Pulse À¯Áö
+            engine_start <= 0; // Pulse ìœ ì§€
 
             case (state)
                 IDLE: begin
@@ -66,7 +66,7 @@ module top_x25519_wrapper (
                         state <= LOAD_SCALAR;
                         cnt <= 0;
                         busy <= 1;
-                        scalar_reg[63:0] <= din; // Ã¹ ¹øÂ° 64ºñÆ® Áï½Ã ·Îµå
+                        scalar_reg[63:0] <= din; // ì²« ë²ˆì§¸ 64ë¹„íŠ¸ ì¦‰ì‹œ ë¡œë“œ
                     end else begin
                         busy <= 0;
                     end
@@ -90,7 +90,7 @@ module top_x25519_wrapper (
                     if (cnt == 2'd3) begin 
                         base_reg[255:192] <= din;
                         state <= CALC;
-                        engine_start <= 1; // ¿¬»ê ½ÃÀÛ!
+                        engine_start <= 1; // ì—°ì‚° ì‹œì‘!
                         cnt <= 0;
                     end else begin
                         cnt <= cnt + 1;
@@ -99,14 +99,14 @@ module top_x25519_wrapper (
 
                 CALC: begin
                     if (engine_done) begin
-                        result_reg <= engine_out; // ¿¬»ê °á°ú ÀúÀå
+                        result_reg <= engine_out; // ì—°ì‚° ê²°ê³¼ ì €ì¥
                         state <= UNLOAD;
                         cnt <= 0;
                     end
                 end
 
                 UNLOAD: begin
-                    // 4Å¬·° µ¿¾È dout¿¡ µ¥ÀÌÅÍ Á¶°¢ÀÌ ½Ç¸®°í out_valid´Â wire¿¡ ÀÇÇØ °è¼Ó High
+                    // 4í´ëŸ­ ë™ì•ˆ doutì— ë°ì´í„° ì¡°ê°ì´ ì‹¤ë¦¬ê³  out_validëŠ” wireì— ì˜í•´ ê³„ì† High
                     if (cnt == 2'd3) begin
                         state <= IDLE;
                         busy <= 0;

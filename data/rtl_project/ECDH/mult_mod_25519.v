@@ -4,7 +4,7 @@ module mult_mod_25519 (
     output reg          done, 
     output reg [254:0]  out
 );
-    // ºñ±³±â Á¦°Å¸¦ À§ÇØ ÆÄÀÌÇÁ¶óÀÎÀ» 1´Ü ´õ ´Ã·Á RED4_C Ãß°¡
+    // ë¹„êµê¸° ì œê±°ë¥¼ ìœ„í•´ íŒŒì´í”„ë¼ì¸ì„ 1ë‹¨ ë” ëŠ˜ë ¤ RED4_C ì¶”ê°€
     localparam IDLE        = 5'd0, 
                CALC        = 5'd1, 
                ADD1_A      = 5'd2, 
@@ -56,7 +56,7 @@ module mult_mod_25519 (
              final_acc, final_acc_low, final_acc_carry, red_prod_tmp, red_tmp_mul} <= 0;
             {sum_add1, sum_add2, sum_red1a, sum_red1b, sum_red2, sum_red3} <= 0;
             {cy_add1, cy_add2, cy_red1a, cy_red1b, cy_red2, cy_red3} <= 0;
-            // ÃÊ±âÈ­ Ãß°¡
+            // ì´ˆê¸°í™” ì¶”ê°€
             {sub_borrow_reg, sub_low_reg, sub_high_reg, final_borrow} <= 0;
         end else begin
             done <= 1'b0;
@@ -152,21 +152,21 @@ module mult_mod_25519 (
 
 
                 RED4_A: begin
-                    // 1´Ü°è: ÇÏÀ§ 128ºñÆ® »¬¼À
+                    // 1ë‹¨ê³„: í•˜ìœ„ 128ë¹„íŠ¸ ëº„ì…ˆ
                     {sub_borrow_reg, sub_low_reg} <= {1'b0, final_sum_reg[127:0]} - {1'b0, P[127:0]};
                     state <= RED4_B;
                 end
 
                 RED4_B: begin
-                    // 2´Ü°è: »óÀ§ 128ºñÆ® »¬¼À
+                    // 2ë‹¨ê³„: ìƒìœ„ 128ë¹„íŠ¸ ëº„ì…ˆ
                     {final_borrow, sub_high_reg} <= {1'b0, final_sum_reg[255:128]} - {2'b00, P[254:128]} - sub_borrow_reg;
                     state <= RED4_C;
                 end
 
                 RED4_C: begin
-                    // 3´Ü°è: ºñ±³±â ¾øÀÌ MUX¸¸À¸·Î °á°ú µµÃâ!
+                    // 3ë‹¨ê³„: ë¹„êµê¸° ì—†ì´ MUXë§Œìœ¼ë¡œ ê²°ê³¼ ë„ì¶œ!
                     if (!final_borrow) begin
-                        out <= {sub_high_reg[126:0], sub_low_reg}; // ÃÑ 255ºñÆ®
+                        out <= {sub_high_reg[126:0], sub_low_reg}; // ì´ 255ë¹„íŠ¸
                     end else begin
                         out <= final_sum_reg[254:0];
                     end

@@ -24,14 +24,14 @@ module inversion_25519 (
     reg [254:0] base_reg;
     reg [254:0] result_reg;
 
-    // ¸ğµâ·¯ °ö¼À±â Á¦¾î ½ÅÈ£
+    // ëª¨ë“ˆëŸ¬ ê³±ì…ˆê¸° ì œì–´ ì‹ í˜¸
     reg         mul_start;
     wire        mul_done;
     reg [254:0] mul_in_a;
     reg [254:0] mul_in_b;
     wire [254:0] mul_out;
 
-    // °ö¼À±â ÀÎ½ºÅÏ½ºÈ­ (Àç»ç¿ë)
+    // ê³±ì…ˆê¸° ì¸ìŠ¤í„´ìŠ¤í™” (ì¬ì‚¬ìš©)
     mult_mod_25519 inv_mult (
         .clk   (clk),
         .rst_n (rst_n),
@@ -63,14 +63,14 @@ module inversion_25519 (
                     if (start) begin
                         base_reg   <= Z_in;
                         result_reg <= 255'd1;
-                        bit_idx    <= 8'd254; // MSBºÎÅÍ ½ÃÀÛ
+                        bit_idx    <= 8'd254; // MSBë¶€í„° ì‹œì‘
                         state      <= SQR;
                     end
                 end
 
                 SQR: begin
                     mul_in_a  <= result_reg;
-                    mul_in_b  <= result_reg; // Á¦°ö
+                    mul_in_b  <= result_reg; // ì œê³±
                     mul_start <= 1'b1;
                     state     <= WAIT1;
                 end
@@ -78,7 +78,7 @@ module inversion_25519 (
                 WAIT1: begin
                     if (mul_done) begin
                         result_reg <= mul_out;
-                        // ÇöÀç ºñÆ®°¡ 1ÀÌ¸é °öÇÏ±â ´Ü°è·Î, 0ÀÌ¸é ´ÙÀ½ ºñÆ®·Î
+                        // í˜„ì¬ ë¹„íŠ¸ê°€ 1ì´ë©´ ê³±í•˜ê¸° ë‹¨ê³„ë¡œ, 0ì´ë©´ ë‹¤ìŒ ë¹„íŠ¸ë¡œ
                         if (P_MINUS_2[bit_idx]) state <= MUL;
                         else                    state <= NEXT;
                     end
@@ -86,7 +86,7 @@ module inversion_25519 (
 
                 MUL: begin
                     mul_in_a  <= result_reg;
-                    mul_in_b  <= base_reg;   // ±âÁ¸ Z_in °ª °öÇÏ±â
+                    mul_in_b  <= base_reg;   // ê¸°ì¡´ Z_in ê°’ ê³±í•˜ê¸°
                     mul_start <= 1'b1;
                     state     <= WAIT2;
                 end

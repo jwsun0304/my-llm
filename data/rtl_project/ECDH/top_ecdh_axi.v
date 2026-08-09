@@ -47,7 +47,7 @@ module top_ecdh_axi (
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             state <= S_IDLE; 
-            in_ready <= 0; // ¸®¼Â Áß¿¡´Â ¹Ýµå½Ã 0
+            in_ready <= 0; // ë¦¬ì…‹ ì¤‘ì—ëŠ” ë°˜ë“œì‹œ 0
             out <= 0; out_valid <= 0; out_last <= 0; done <= 0; cnt <= 0;
             inner_start <= 0; scalar_buf <= 0; base_buf <= 0; out_buf <= 0; inner_din <= 0;
         end else begin
@@ -55,7 +55,7 @@ module top_ecdh_axi (
 
             case (state)
                 S_IDLE: begin
-                    in_ready <= 1; // ¸®¼Â ÇØÁ¦ ÈÄ ´ÙÀ½ Å¬·°¿¡ ºñ·Î¼Ò 1ÀÌ µÊ
+                    in_ready <= 1; // ë¦¬ì…‹ í•´ì œ í›„ ë‹¤ìŒ í´ëŸ­ì— ë¹„ë¡œì†Œ 1ì´ ë¨
                     if (in_valid && in_ready) begin
                         scalar_buf[63:0] <= in; 
                         cnt <= 1; 
@@ -89,14 +89,14 @@ module top_ecdh_axi (
                     if (in_valid && in_ready) begin
                         base_buf[cnt*64 +: 64] <= in;
                         if (cnt == 3 || in_last) begin 
-                            in_ready <= 0; // ¼ö½Å ³¡, ready ´ÝÀ½
+                            in_ready <= 0; // ìˆ˜ì‹  ë, ready ë‹«ìŒ
                             state <= S_FEED; cnt <= 0; 
                         end else cnt <= cnt + 1;
                     end
                 end
 
                 S_FEED: begin
-                    in_ready <= 0; // ¿¬»ê Áß¿¡´Â ÄÑÁöÁö ¾ÊÀ½
+                    in_ready <= 0; // ì—°ì‚° ì¤‘ì—ëŠ” ì¼œì§€ì§€ ì•ŠìŒ
                     inner_din <= (cnt < 4) ? scalar_buf[cnt*64 +: 64] : base_buf[(cnt-4)*64 +: 64];
                     if (cnt == 0) inner_start <= 1; 
                     if (cnt == 7) begin state <= S_WAIT; cnt <= 0; end
@@ -143,7 +143,7 @@ module top_ecdh_axi (
                 S_HALT: begin 
                     done <= 0; 
                     in_ready <= 0;
-                    state <= S_HALT; // ¸®¼Â Àü±îÁö ´ë±â
+                    state <= S_HALT; // ë¦¬ì…‹ ì „ê¹Œì§€ ëŒ€ê¸°
                 end
                 
                 default: state <= S_IDLE;

@@ -5,7 +5,7 @@ module x25519_core (
     output wire [254:0] out_X,
     output wire [254:0] out_Z
 );
-    // ³»ºÎ ½ÅÈ£
+    // ë‚´ë¶€ ì‹ í˜¸
     wire [3:0]   mux_sel_a, mux_sel_b;
     wire [1:0]   alu_op;
     wire [7:0]   reg_we;
@@ -15,7 +15,7 @@ module x25519_core (
     reg [254:0] X1, Z1, X2, Z2, T1, T2, T3, T4;
     reg [254:0] alu_in_a, alu_in_b;
 
-    // --- ÆÄÀÌÇÁ¶óÀÎ ·¹Áö½ºÅÍ (dont_touch »èÁ¦) ---
+    // --- íŒŒì´í”„ë¼ì¸ ë ˆì§€ìŠ¤í„° (dont_touch ì‚­ì œ) ---
     reg [7:0]   we_pipe;
     reg         cswap_pipe;
     reg [254:0] alu_out_pipe;
@@ -23,7 +23,7 @@ module x25519_core (
     reg         alu_start_pipe;
     reg         done_pipe;
 
-    // 1. ÆÄÀÌÇÁ¶óÀÎ µ¿±âÈ­
+    // 1. íŒŒì´í”„ë¼ì¸ ë™ê¸°í™”
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             we_pipe        <= 8'h0;
@@ -31,7 +31,7 @@ module x25519_core (
             alu_start_pipe <= 1'b0;
             alu_out_pipe   <= 255'd0;
             alu_done_pipe  <= 1'b0;
-            done_pipe      <= 1'b1; // ÃÊ±â »óÅÂ´Â ÀÛ¾÷ ¾øÀ½
+            done_pipe      <= 1'b1; // ì´ˆê¸° ìƒíƒœëŠ” ì‘ì—… ì—†ìŒ
         end else begin
             we_pipe        <= reg_we;
             cswap_pipe     <= cswap;
@@ -42,21 +42,21 @@ module x25519_core (
         end
     end
 
-    // 2. ¸ŞÀÎ µ¥ÀÌÅÍ ·¹Áö½ºÅÍ ¾÷µ¥ÀÌÆ®
+    // 2. ë©”ì¸ ë°ì´í„° ë ˆì§€ìŠ¤í„° ì—…ë°ì´íŠ¸
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            {X1, Z1, X2, Z2, T1, T2, T3, T4} <= 2040'd0; // ÇÑ ¹ø¿¡ ÃÊ±âÈ­
+            {X1, Z1, X2, Z2, T1, T2, T3, T4} <= 2040'd0; // í•œ ë²ˆì— ì´ˆê¸°í™”
         end else if (start) begin
             X1 <= 255'd1; Z1 <= 255'd0; X2 <= base_u; Z2 <= 255'd1;
             {T1, T2, T3, T4} <= 1020'd0;
         end else begin
-            // ÅøÀº ¿©±â¼­ pipe ½ÅÈ£µéÀÌ ¾²ÀÌ´Â °ÍÀ» º¸°í ÃÖÀûÈ­¿¡¼­ Á¦¿ÜÇÕ´Ï´Ù.
-            // CSWAP ·ÎÁ÷
+            // íˆ´ì€ ì—¬ê¸°ì„œ pipe ì‹ í˜¸ë“¤ì´ ì“°ì´ëŠ” ê²ƒì„ ë³´ê³  ìµœì í™”ì—ì„œ ì œì™¸í•©ë‹ˆë‹¤.
+            // CSWAP ë¡œì§
             if (cswap_pipe) begin
                 X1 <= X2; X2 <= X1;
                 Z1 <= Z2; Z2 <= Z1;
             end else begin
-                // Write Enable ·ÎÁ÷
+                // Write Enable ë¡œì§
                 if (we_pipe[0]) X1 <= alu_out_pipe;
                 if (we_pipe[1]) Z1 <= alu_out_pipe;
                 if (we_pipe[2]) X2 <= alu_out_pipe;
@@ -70,7 +70,7 @@ module x25519_core (
         end
     end
 
-    // 3. ALU ÀÔ·Â MUX (µ¿±âÈ­µÈ °ª »ç¿ë)
+    // 3. ALU ì…ë ¥ MUX (ë™ê¸°í™”ëœ ê°’ ì‚¬ìš©)
     always @(*) begin
         case (mux_sel_a)
             4'd0: alu_in_a = X1; 4'd1: alu_in_a = Z1; 4'd2: alu_in_a = X2;
@@ -85,19 +85,19 @@ module x25519_core (
         endcase
     end
 
-    // ÇÏÀ§ ¸ğµâ ¿¬°á
+    // í•˜ìœ„ ëª¨ë“ˆ ì—°ê²°
     mont_ladder ctrl_inst (
         .clk(clk), .rst_n(rst_n), .start(start), .scalar_key(scalar_key),
         .done(done_raw),
         .mux_sel_a(mux_sel_a), .mux_sel_b(mux_sel_b), .alu_op(alu_op),
         .reg_we(reg_we), .cswap(cswap), 
         .alu_start(alu_start),
-        .alu_done(alu_done_pipe) // Áö¿¬µÈ ½ÅÈ£¸¦ ÇÇµå¹é
+        .alu_done(alu_done_pipe) // ì§€ì—°ëœ ì‹ í˜¸ë¥¼ í”¼ë“œë°±
     );
 
     shared_alu_25519 alu_inst (
         .clk(clk), .rst_n(rst_n), 
-        .start(alu_start_pipe), // Áö¿¬µÈ ½ÅÈ£·Î ½ÃÀÛ
+        .start(alu_start_pipe), // ì§€ì—°ëœ ì‹ í˜¸ë¡œ ì‹œì‘
         .op(alu_op), .in_a(alu_in_a), .in_b(alu_in_b), 
         .done(alu_done_raw), .out(alu_out_raw)
     );

@@ -20,7 +20,7 @@ module tb_top_ecdh_axi;
     reg [255:0] expected    = 256'h4a5d9d5ba4ce2de1728e3bf480350f25e07e21c947d19e3376f09b3c1e161742;
     reg [255:0] actual_res  = 0;
 
-    integer i; // µ¥ÀÌÅÍ ¼öÁı¿ë ÀÎµ¦½º
+    integer i; // ë°ì´í„° ìˆ˜ì§‘ìš© ì¸ë±ìŠ¤
 
     top_ecdh_axi uut (
         .clk(clk), .rst_n(rst_n), .in(in), .in_valid(in_valid), .in_last(in_last),
@@ -33,13 +33,13 @@ module tb_top_ecdh_axi;
     initial begin
         $display("[%0t] Simulation Started...", $time);
         
-        // 1. ¸®¼Â
+        // 1. ë¦¬ì…‹
         #10 rst_n = 1;
         
         // =====================================================================
-        // STEP 1: ÀÔ·Â (°¡¼Ó±â°¡ in_ready¸¦ ÄÓ ¶§±îÁö ´ë±â)
+        // STEP 1: ì…ë ¥ (ê°€ì†ê¸°ê°€ in_readyë¥¼ ì¼¤ ë•Œê¹Œì§€ ëŒ€ê¸°)
         // =====================================================================
-        while (in_ready == 0) @(posedge clk); // [ÇÙ½É] ¸®¼Â ÈÄ ready ¶ã ¶§±îÁö ´ë±â
+        while (in_ready == 0) @(posedge clk); // [í•µì‹¬] ë¦¬ì…‹ í›„ ready ëœ° ë•Œê¹Œì§€ ëŒ€ê¸°
         
         in_valid = 1;
         in = test_scalar[63:0];   @(posedge clk);
@@ -56,7 +56,7 @@ module tb_top_ecdh_axi;
         in_valid = 0; in_last = 0; in = 0;
 
         // =====================================================================
-        // STEP 2: ¿¬»ê °á°ú ¼öÁı (Mismatch ÇØ°áÀ» À§ÇÑ AXI-Stream Á¤¼® ·çÇÁ)
+        // STEP 2: ì—°ì‚° ê²°ê³¼ ìˆ˜ì§‘ (Mismatch í•´ê²°ì„ ìœ„í•œ AXI-Stream ì •ì„ ë£¨í”„)
         // =====================================================================
         i = 0;
         while (i < 4) begin
@@ -66,12 +66,12 @@ module tb_top_ecdh_axi;
                 if (i == 1) actual_res[127:64] = out;
                 if (i == 2) actual_res[191:128]= out;
                 if (i == 3) actual_res[255:192]= out;
-                i = i + 1; // 1°³ ¹ŞÀ» ¶§¸¶´Ù Ä«¿îÆ®¾÷
+                i = i + 1; // 1ê°œ ë°›ì„ ë•Œë§ˆë‹¤ ì¹´ìš´íŠ¸ì—…
             end
         end
 
         // =====================================================================
-        // STEP 3: ÃÖÁ¾ °ËÁõ
+        // STEP 3: ìµœì¢… ê²€ì¦
         // =====================================================================
         wait(done == 1);
         #10;
@@ -89,7 +89,7 @@ module tb_top_ecdh_axi;
         #100 $finish;
     end
 
-    // Å¸ÀÓ¾Æ¿ô ¾ÈÀüÀåÄ¡
+    // íƒ€ì„ì•„ì›ƒ ì•ˆì „ì¥ì¹˜
     initial begin
         #5_000_000;
         $display("\n[TIMEOUT] Simulation took too long. Force quitting.");

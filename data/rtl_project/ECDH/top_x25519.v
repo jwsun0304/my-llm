@@ -5,7 +5,7 @@ module top_x25519 (
     output wire [255:0] result_x 
 );
 
-    // 1. ÀÔ·Â ·¡Äª ¹× ¹ÙÀÌÆ® ½º¿Ò
+    // 1. ì…ë ¥ ë˜ì¹­ ë° ë°”ì´íŠ¸ ìŠ¤ì™‘
     reg [255:0] s_reg, b_reg;
     wire [255:0] key_rev, base_rev;
     genvar i;
@@ -26,7 +26,7 @@ module top_x25519 (
         end
     end
 
-    // ±âÁ¸ wire clamped_key¸¦ reg·Î º¯°æÇÏ¿© ÇÑ Å¬·° ÆÄÀÌÇÁ¶óÀÌ´×À» ¼öÇà
+    // ê¸°ì¡´ wire clamped_keyë¥¼ regë¡œ ë³€ê²½í•˜ì—¬ í•œ í´ëŸ­ íŒŒì´í”„ë¼ì´ë‹ì„ ìˆ˜í–‰
     reg [254:0] clamped_key_reg;
     wire [254:0] clamped_key_wire = {1'b1, key_rev[253:3], 3'b000};
 
@@ -38,7 +38,7 @@ module top_x25519 (
     end
     // ------------------------------------------
 
-    // 2. ÇÏÀ§ ¸ğµâ ¿¬°á
+    // 2. í•˜ìœ„ ëª¨ë“ˆ ì—°ê²°
     reg [3:0] state;
     reg core_start, inv_start, mul_start;
     wire core_done, inv_done, mul_done;
@@ -48,7 +48,7 @@ module top_x25519 (
         .clk(clk),
         .rst_n(rst_n),
         .start(core_start),
-        .scalar_key(clamped_key_reg), // ÆÄÀÌÇÁ¶óÀÎµÈ ·¹Áö½ºÅÍ Àü´Ş
+        .scalar_key(clamped_key_reg), // íŒŒì´í”„ë¼ì¸ëœ ë ˆì§€ìŠ¤í„° ì „ë‹¬
         .base_u(base_rev[254:0]),
         .done(core_done),
         .out_X(core_X),
@@ -74,7 +74,7 @@ module top_x25519 (
         .out(mul_out)
     );
 
-    // 3. Ãâ·Â ¹ÙÀÌÆ® µÚÁı±â
+    // 3. ì¶œë ¥ ë°”ì´íŠ¸ ë’¤ì§‘ê¸°
     wire [255:0] full_res = {1'b0, mul_out};
     generate
         for (i=0; i<32; i=i+1) begin : rev_out
@@ -82,7 +82,7 @@ module top_x25519 (
         end
     endgenerate
 
-    // 4. FSM Á¦¾î
+    // 4. FSM ì œì–´
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin 
             state <= 0; 

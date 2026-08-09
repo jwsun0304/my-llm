@@ -9,7 +9,7 @@ module shared_alu_25519 (
 );
     localparam [254:0] P = 255'h7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFED;
     
-    // »óÅÂ Á¤ÀÇ: S5°¡ Ãß°¡µÇ¾ú°í, WAIT_MULÀº 6À¸·Î ¹Ğ·Á³µ½À´Ï´Ù. (3ºñÆ®·Î ÃæºĞÈ÷ Ç¥Çö °¡´É)
+    // ìƒíƒœ ì •ì˜: S5ê°€ ì¶”ê°€ë˜ì—ˆê³ , WAIT_MULì€ 6ìœ¼ë¡œ ë°€ë ¤ë‚¬ìŠµë‹ˆë‹¤. (3ë¹„íŠ¸ë¡œ ì¶©ë¶„íˆ í‘œí˜„ ê°€ëŠ¥)
     localparam IDLE=3'd0, S1=3'd1, S2=3'd2, S3=3'd3, S4=3'd4, S5=3'd5, WAIT_MUL=3'd6;
     
     reg [2:0]   state;
@@ -17,20 +17,20 @@ module shared_alu_25519 (
     reg [127:0] low_res; 
 
     // ==========================================
-    // Åø ¼Ó¼º(max_fanout µî)À» Á¦°ÅÇÑ ¼ø¼ö ·¹Áö½ºÅÍ ¼±¾ğ
-    // (¹°¸®Àû ÃÖÀûÈ­´Â VivadoÀÇ phys_opt_design¿¡ ¸Ã±é´Ï´Ù)
+    // íˆ´ ì†ì„±(max_fanout ë“±)ì„ ì œê±°í•œ ìˆœìˆ˜ ë ˆì§€ìŠ¤í„° ì„ ì–¸
+    // (ë¬¼ë¦¬ì  ìµœì í™”ëŠ” Vivadoì˜ phys_opt_designì— ë§¡ê¹ë‹ˆë‹¤)
     // ==========================================
     reg carry_out;
     reg op_sub;
     
-    reg [254:0] res_raw;      // A +/- B ÀÇ ¼ø¼ö °á°ú
-    reg         final_carry;  // 255ºñÆ® ¿¬»êÀÇ ÃÖÁ¾ ¿Ã¸²/³»¸²¼ö
-    reg [255:0] res_adj;      // P¸¦ ´õÇÏ°Å³ª »« º¸Á¤°ª
+    reg [254:0] res_raw;      // A +/- B ì˜ ìˆœìˆ˜ ê²°ê³¼
+    reg         final_carry;  // 255ë¹„íŠ¸ ì—°ì‚°ì˜ ìµœì¢… ì˜¬ë¦¼/ë‚´ë¦¼ìˆ˜
+    reg [255:0] res_adj;      // Pë¥¼ ë”í•˜ê±°ë‚˜ ëº€ ë³´ì •ê°’
 
     reg [127:0] adj_low;
     reg         adj_carry;
 
-    // ¸ğµâ·¯ °ö¼À±â ¿¬°á
+    // ëª¨ë“ˆëŸ¬ ê³±ì…ˆê¸° ì—°ê²°
     reg mul_start; wire mul_done; wire [254:0] mul_out;
     mult_mod_25519 mul_inst (
         .clk(clk), .rst_n(rst_n), .start(mul_start),
@@ -53,42 +53,42 @@ module shared_alu_25519 (
                     else            state <= S1;
                 end
                 
-                S1: begin // [1´Ü°è] ÇÏÀ§ 128ºñÆ® ¿¬»ê
+                S1: begin // [1ë‹¨ê³„] í•˜ìœ„ 128ë¹„íŠ¸ ì—°ì‚°
                     if (!op_sub) {carry_out, low_res} <= a_reg[127:0] + b_reg[127:0];
                     else         {carry_out, low_res} <= a_reg[127:0] - b_reg[127:0];
                     state <= S2;
                 end
 
-                S2: begin // [2´Ü°è] »óÀ§ 127ºñÆ® ¿¬»ê ¹× °á°ú ÅëÇÕ
+                S2: begin // [2ë‹¨ê³„] ìƒìœ„ 127ë¹„íŠ¸ ì—°ì‚° ë° ê²°ê³¼ í†µí•©
                     if (!op_sub) {final_carry, res_raw[254:128]} <= a_reg[254:128] + b_reg[254:128] + carry_out;
                     else         {final_carry, res_raw[254:128]} <= a_reg[254:128] - b_reg[254:128] - carry_out;
                     res_raw[127:0] <= low_res;
                     state <= S3;
                 end
 
-                S3: begin // [3´Ü°è] º¸Á¤°ª °è»êÀ» ¹İÀ¸·Î ÂÉ°· (ÇÏÀ§ 128ºñÆ® ¸ÕÀú)
-                    // µ¡¼À ½Ã 19 ´õÇÏ±â, »¬¼À ½Ã P ´õÇÏ±â
+                S3: begin // [3ë‹¨ê³„] ë³´ì •ê°’ ê³„ì‚°ì„ ë°˜ìœ¼ë¡œ ìª¼ê°¬ (í•˜ìœ„ 128ë¹„íŠ¸ ë¨¼ì €)
+                    // ë§ì…ˆ ì‹œ 19 ë”í•˜ê¸°, ëº„ì…ˆ ì‹œ P ë”í•˜ê¸°
                     if (!op_sub) {adj_carry, adj_low} <= res_raw[127:0] + 128'd19; 
                     else         {adj_carry, adj_low} <= res_raw[127:0] + P[127:0];
                     state <= S4;
                 end
 
-                S4: begin // [4´Ü°è] º¸Á¤°ª °è»ê ¸¶¹«¸® (»óÀ§ 127ºñÆ® + Ä³¸®)
-                    if (!op_sub) res_adj[255:128] <= {1'b0, res_raw[254:128]} + adj_carry; // 19ÀÇ »óÀ§ ºñÆ®´Â 0ÀÌ¹Ç·Î »ı·«
+                S4: begin // [4ë‹¨ê³„] ë³´ì •ê°’ ê³„ì‚° ë§ˆë¬´ë¦¬ (ìƒìœ„ 127ë¹„íŠ¸ + ìºë¦¬)
+                    if (!op_sub) res_adj[255:128] <= {1'b0, res_raw[254:128]} + adj_carry; // 19ì˜ ìƒìœ„ ë¹„íŠ¸ëŠ” 0ì´ë¯€ë¡œ ìƒëµ
                     else         res_adj[255:128] <= {1'b0, res_raw[254:128]} + {1'b0, P[254:128]} + adj_carry;
                     
-                    res_adj[127:0] <= adj_low; // ÇÏÀ§ ºñÆ® ÇÕÄ¡±â
+                    res_adj[127:0] <= adj_low; // í•˜ìœ„ ë¹„íŠ¸ í•©ì¹˜ê¸°
                     state <= S5;
                 end
 
-                S5: begin // [5´Ü°è] ÃÖÁ¾ ¼±ÅÃ
+                S5: begin // [5ë‹¨ê³„] ìµœì¢… ì„ íƒ
                     if (!op_sub) begin
-                        // µ¡¼À °á°ú ¼±ÅÃ (res_adj[255]´Â res_adj°¡ 256'h80...0 ÀÌ»óÀÎÁö È®ÀÎÇÏ´Â °Í°ú µ¿ÀÏ)
+                        // ë§ì…ˆ ê²°ê³¼ ì„ íƒ (res_adj[255]ëŠ” res_adjê°€ 256'h80...0 ì´ìƒì¸ì§€ í™•ì¸í•˜ëŠ” ê²ƒê³¼ ë™ì¼)
                         if (final_carry || res_adj[255]) 
                              out <= res_adj[254:0];
                         else out <= res_raw;
                     end else begin
-                        // »¬¼À °á°ú ¼±ÅÃ: °á°ú°¡ À½¼ö(final_carry==1)¸é º¸Á¤°ª, ¾Æ´Ï¸é ¿øº»
+                        // ëº„ì…ˆ ê²°ê³¼ ì„ íƒ: ê²°ê³¼ê°€ ìŒìˆ˜(final_carry==1)ë©´ ë³´ì •ê°’, ì•„ë‹ˆë©´ ì›ë³¸
                         if (final_carry) out <= res_adj[254:0];
                         else             out <= res_raw;
                     end
