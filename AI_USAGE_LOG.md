@@ -34,6 +34,17 @@
 
 - **관찰**: iter 2000 부근부터 train loss는 계속 감소(1.20→0.65)하는데 val loss는 iter 2250~2750 부근에서 최저점(≈1.483~1.488)을 찍은 뒤 다시 상승(4999 기준 1.7525)하는 패턴 확인. 명확한 overfitting — train loss만 보면 계속 좋아지는 것처럼 보이지만 실제 일반화 성능은 iter 2500 전후를 정점으로 악화됨. 작은 모델(n_layer=6, n_embd=384)+작은 데이터(tiny-shakespeare, 약 100만 토큰) 조합, 그리고 early stopping/체크포인트 선택 없이 고정 5000 iter를 끝까지 돌린 설정에서 예상 가능한 현상으로 해석. → Ablation/이후 실험에서는 "val loss 최저점 체크포인트를 최종 모델로 선택"하는 방식을 근거로 설명 가능.
 
+## 2026-08-09: 체크포인트 로딩 오류 (torch.load)
+
+- **문제**: `sample.py`로 최종 체크포인트(iter 4999)를 불러올 때 `_pickle.UnpicklingError: Weights only load failed` 발생. `train.py`의 재개 로직에서도 동일 지점에서 터질 수 있는 문제.
+- **원인 분석**: PyTorch 2.6부터 `torch.load`의 `weights_only` 기본값이 `False`→`True`로 바뀌어, 체크포인트에 텐서 외에 `GPTConfig` 객체(`train.py`에서 `"config": config`로 통째로 저장)가 들어있으면 기본 보안 모드에서 차단됨.
+- **AI 활용**: Claude Code가 에러 메시지의 원인(파이썬/PyTorch 버전 변경 이력)을 짚어주고 수정안(`weights_only=False` 명시) 제시.
+- **검증/판단**: 이 체크포인트는 본인이 직접 학습시켜 만든 신뢰 가능한 파일이므로 `weights_only=False`가 안전하다고 판단해 채택 (외부에서 받은 체크포인트였다면 `add_safe_globals` 방식을 썼을 것). `sample.py`, `train.py` 양쪽 모두 수정 후 Colab에서 `git pull`로 반영해 정상 동작 확인.
+
+## Stage 1 마무리 (nanoGPT 학습 결과)
+
+`sample.py` 생성 샘플(온도 0.8, top_k 40)에서 `GLOUCESTER:`, `BRUTUS:`, `CORIOLANUS:` 등 등장인물 이름과 대사 포맷(콜론, 개행 구조)을 정확히 재현했고 셰익스피어체 어휘/운율도 따라갔으나, 문장 단위 의미는 대부분 맞지 않음 — char-level, 소형 모델(6-layer, 384-dim)이 문법적 패턴은 학습했지만 의미적 일관성까지는 확보하지 못한 상태로 해석. 위 overfitting 관찰과 함께 "표면적 패턴 vs 의미적 이해"를 구분해 설명할 수 있는 근거로 확보.
+
 ## (진행하며 계속 추가)
 
 - Optuna 탐색 단계에서 AI가 제안한 탐색 범위를 그대로 썼는지, 왜 수정했는지 기록.
