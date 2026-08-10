@@ -8,7 +8,7 @@ nanoGPT 스타일로 처음부터 구현하는 미니 GPT 프로젝트. 학습 �
 2. [x] Ablation 실험 (positional encoding / causal mask 제거 후 비교)
    - 2.5 [x] BPE 토크나이저 구현 + char-level과 bits-per-character 비교
 3. [x] Optuna로 모델 크기 대비 성능/비용 트레이드오프 분석 + Colab T4 메모리 병목 분석
-   - 3.5 [ ] 스케일링 법칙 미니 실험
+   - 3.5 [x] 스케일링 법칙 미니 실험
 4. [ ] 개인 RTL 프로젝트(코드+보고서) 기반 RAG 어시스턴트
    - 4.5 [ ] RAG vs LoRA 파인튜닝 비교 실험
 5. [ ] 문서 정리 (AI_USAGE_LOG, 설계 근거)
