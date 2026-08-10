@@ -6,7 +6,7 @@ import torch
 from model import GPT, GPTConfig
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
-CKPT_DIR = os.path.join(os.path.dirname(__file__), "..", "checkpoints")
+CKPT_DIR = os.environ.get("CKPT_DIR", os.path.join(os.path.dirname(__file__), "..", "checkpoints"))
 
 BATCH_SIZE = 64
 BLOCK_SIZE = 256

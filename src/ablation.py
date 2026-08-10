@@ -11,7 +11,8 @@ MAX_ITERS = 1500
 EVAL_INTERVAL = 150
 EVAL_ITERS = 50
 
-RESULTS_PATH = os.path.join(os.path.dirname(__file__), "..", "results", "ablation_results.csv")
+RESULTS_DIR = os.environ.get("RESULTS_DIR", os.path.join(os.path.dirname(__file__), "..", "results"))
+RESULTS_PATH = os.path.join(RESULTS_DIR, "ablation_results.csv")
 
 VARIANTS = {
     "baseline": dict(use_pos_emb=True, use_causal_mask=True),
@@ -25,7 +26,17 @@ def main():
     os.makedirs(os.path.dirname(RESULTS_PATH), exist_ok=True)
 
     rows = []
+    # load any rows already saved by a previous (interrupted) run so finished variants aren't lost
+    if os.path.exists(RESULTS_PATH):
+        with open(RESULTS_PATH, newline="") as f:
+            rows = list(csv.DictReader(f))
+    done_variants = {r["variant"] for r in rows}
+
     for name, flags in VARIANTS.items():
+        if name in done_variants:
+            print(f"\n=== ablation variant: {name} — already in {RESULTS_PATH}, skipping ===")
+            continue
+
         print(f"\n=== ablation variant: {name} ({flags}) ===")
         config = GPTConfig(vocab_size=vocab_size, block_size=BLOCK_SIZE, **flags)
         ckpt_path = os.path.join(CKPT_DIR, f"ablation_{name}.pt")
@@ -42,12 +53,13 @@ def main():
         for it, train_loss, val_loss in history:
             rows.append({"variant": name, "iter": it, "train_loss": train_loss, "val_loss": val_loss})
 
-    with open(RESULTS_PATH, "w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["variant", "iter", "train_loss", "val_loss"])
-        writer.writeheader()
-        writer.writerows(rows)
+        with open(RESULTS_PATH, "w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=["variant", "iter", "train_loss", "val_loss"])
+            writer.writeheader()
+            writer.writerows(rows)
+        print(f"saved progress to {RESULTS_PATH}")
 
-    print(f"\nsaved results to {RESULTS_PATH}")
+    print(f"\nall variants done, results at {RESULTS_PATH}")
     print("\nfinal loss per variant:")
     for name in VARIANTS:
         last = [r for r in rows if r["variant"] == name][-1]
