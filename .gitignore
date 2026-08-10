@@ -5,6 +5,7 @@ __pycache__/
 venv/
 checkpoints/*.pt
 checkpoints/*.pth
+checkpoints/lora_adapter/
 data/*.txt
 data/*.bin
 data/vocab.npy

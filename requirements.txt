@@ -5,3 +5,4 @@ optuna
 sentence-transformers
 transformers
 accelerate
+peft
