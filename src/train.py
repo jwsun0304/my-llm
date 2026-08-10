@@ -57,9 +57,12 @@ def train_model(
     lr=LEARNING_RATE,
     resume=True,
     log_fn=print,
+    train_data=None,
+    val_data=None,
 ):
     os.makedirs(os.path.dirname(ckpt_path), exist_ok=True)
-    train_data, val_data, _ = load_data()
+    if train_data is None or val_data is None:
+        train_data, val_data, _ = load_data()
 
     model = GPT(config).to(DEVICE)
     optimizer = torch.optim.AdamW(model.parameters(), lr=lr)
