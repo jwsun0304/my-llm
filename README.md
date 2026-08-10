@@ -5,7 +5,7 @@ nanoGPT 스타일로 처음부터 구현하는 미니 GPT 프로젝트. 학습 �
 ## 진행 단계
 
 1. [x] 미니 GPT 구현 (tokenizer, model, train, sample)
-2. [ ] Ablation 실험 (positional encoding / causal mask 제거 후 비교)
+2. [ ] Ablation 실험 (positional encoding / causal mask 제거 후 비교) — 코드 준비 완료, Colab 실행 대기
 3. [ ] Optuna로 모델 크기 대비 성능/비용 트레이드오프 분석
 4. [ ] 개인 RTL 프로젝트(코드+보고서) 기반 RAG 어시스턴트
 5. [ ] 문서 정리 (AI_USAGE_LOG, 설계 근거)

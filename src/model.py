@@ -13,6 +13,8 @@ class GPTConfig:
     n_head: int = 6
     n_embd: int = 384
     dropout: float = 0.1
+    use_pos_emb: bool = True
+    use_causal_mask: bool = True
 
 
 class CausalSelfAttention(nn.Module):
@@ -26,6 +28,7 @@ class CausalSelfAttention(nn.Module):
         self.proj = nn.Linear(config.n_embd, config.n_embd)
         self.attn_dropout = nn.Dropout(config.dropout)
         self.resid_dropout = nn.Dropout(config.dropout)
+        self.use_causal_mask = config.use_causal_mask
 
         mask = torch.tril(torch.ones(config.block_size, config.block_size))
         self.register_buffer("mask", mask.view(1, 1, config.block_size, config.block_size))
@@ -39,7 +42,8 @@ class CausalSelfAttention(nn.Module):
         v = v.view(B, T, self.n_head, self.head_size).transpose(1, 2)
 
         att = (q @ k.transpose(-2, -1)) * (self.head_size ** -0.5)
-        att = att.masked_fill(self.mask[:, :, :T, :T] == 0, float("-inf"))
+        if self.use_causal_mask:
+            att = att.masked_fill(self.mask[:, :, :T, :T] == 0, float("-inf"))
         att = F.softmax(att, dim=-1)
         att = self.attn_dropout(att)
 
@@ -102,8 +106,12 @@ class GPT(nn.Module):
         B, T = idx.shape
         assert T <= self.config.block_size, "sequence longer than block_size"
 
-        pos = torch.arange(T, device=idx.device)
-        x = self.drop(self.tok_emb(idx) + self.pos_emb(pos))
+        tok = self.tok_emb(idx)
+        if self.config.use_pos_emb:
+            pos = torch.arange(T, device=idx.device)
+            x = self.drop(tok + self.pos_emb(pos))
+        else:
+            x = self.drop(tok)
         for block in self.blocks:
             x = block(x)
         x = self.ln_f(x)
