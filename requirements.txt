@@ -6,3 +6,4 @@ sentence-transformers
 transformers
 accelerate
 peft
+torchao>=0.16.0
