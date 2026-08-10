@@ -7,7 +7,7 @@ import numpy as np
 INDEX_DIR = os.environ.get("RAG_INDEX_DIR", os.path.join(os.path.dirname(__file__), "..", "data", "rag_index"))
 EMBED_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 LLM_MODEL_NAME = "Qwen/Qwen2.5-1.5B-Instruct"
-TOP_K = 3
+TOP_K = 5
 
 SYSTEM_PROMPT = (
     "당신은 사용자의 반도체 설계 프로젝트(RTL 코드/문서)에 대한 질문에 답하는 어시스턴트입니다. "
