@@ -1,0 +1,4 @@
+batch_size,status,peak_mem_mb
+64,ok,7202.8
+128,ok,14255.8
+256,oom,
