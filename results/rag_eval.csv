@@ -1,0 +1,13 @@
+id,question,retrieved_files,retrieval_hit,grounding_hit_auto,manual_verdict,note
+1,X25519 scalar multiplication 알고리즘,ECDH/README.md;ECDH/x25519_core.v;ECDH/README.md;ECDH/top_25519_wrapper.v;ECDH/tb_top_x25519.v,True,True,correct,Montgomery ladder로 정확히 답변
+2,모듈러 역원 계산 방식,ECDH/tb_top_x25519.v;ECDH/tb_top_x25519_wrapper.v;lbist/s1494_cut.v;ECDH/tb_top_x25519.v;ECDH/mult_mod_25519.v,False,False,hallucination,inversion_25519.v 검색 실패로 RSA식 Euler's Totient 설명을 지어냄 (실제는 페르마 소정리)
+3,PQC_KEM.c 역할,ECDH/tb_top_x25519.v;ECDH/tb_top_ecdh_axi.v;ECDH/tb_top_ecdh_axi.v;lbist/tb_misr.v;lbist/README.md,False,False,appropriate_refusal,검색 실패했지만 지어내지 않고 정직하게 거부함
+4,curve25519.v 본인 작성 여부,ECDH/README.md;ECDH/tb_top_x25519.v;lbist/gen_controller_dataset.py;ECDH/top_25519_wrapper.v;lbist/README.md,True,True,correct,출처 URL까지 정확히 인용
+5,ECDH 검증 테스트 벡터,ECDH/README.md;lbist/gen_controller_dataset.py;ECDH/tb_top_ecdh_axi.v;lbist/fault_sim.py;ECDH/top_ecdh_axi.v,True,True,hallucination,RFC7748/RFC8037/Wycheproof 세 개 모두 518개라고 오답 (실제로는 Wycheproof만 518개)
+6,ISCAS'89 벤치마크 회로 개수/이름,lbist/run_multi_circuit.py;lbist/README.md;lbist/bench_parser.py;lbist/gen_controller_dataset.py;lbist/lbist_top_with_cut.v,True,True,partial,4개 중 3개(s1494/s5378/s9234)만 나열, s13207 누락 및 개수를 세 개로 오답
+7,Adaptive-T가 T를 늘리는 조건,lbist/adaptive_controller.py;lbist/README.md;lbist/README.md;lbist/tb_adaptive_controller.v;lbist/adaptive_controller.v,True,True,partial,핵심 개념(threshold/calibration) 언급은 맞으나 calibration 패턴 수를 72로 오답(실제는 T_init*1.5)
+8,다중 회로 일반성 검증에서 Adaptive-T 항상 승리 여부,lbist/README.md;lbist/trial_log.md;lbist/README.md;lbist/trial_log.md;lbist/trial_log.md,True,True,correct,4개 회로 모두 승리, 실제 README와 일치
+9,결함 collapsing 전후 개수(s5378),lbist/README.md;lbist/fault_collapse.py;lbist/README.md;lbist/trial_log.md;lbist/trial_log.md,True,True,hallucination,"2911->67.00으로 오답, 67.00은 다른 회로(s9234) 커버리지 %를 결함 수로 착각해 섞음"
+10,tune_adaptive.py 튜닝이 Best Fixed-T보다 항상 좋았는지,lbist/README.md;lbist/README.md;lbist/optuna_tune.py;lbist/tune_adaptive.py;lbist/README.md,True,True,hallucination,숫자(95.595/94.581/6.95)는 실제 값이지만 서로 다른 두 비교를 섞어 자기모순적 결론 도출
+11,PRPG 비트 수,ECDH/tb_top_x25519.v;lbist/trial_log.md;lbist/tb_misr_coverage.v;lbist/prpg.v;ECDH/tb_top_ecdh_axi.v,False,True,correct,16비트로 정확히 답변. prpg.v(Verilog)를 찾았으나 테스트셋의 expected_files 목록에 이 파일 누락 - 테스트셋 자체의 결함
+12,LBIST 실제 FPGA/상용EDA 검증 여부,ECDH/README.md;lbist/README.md;lbist/README.md;lbist/prpg_misr.py;lbist/experiment.py,True,False,incorrect_refusal,README에 명시된 답("필요하지 않음")이 있는 청크가 상위 5개에 안 들어가 과도하게 거부
