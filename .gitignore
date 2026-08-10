@@ -10,6 +10,7 @@ data/*.bin
 data/vocab.npy
 data/bpe_merges.json
 data/bpe_meta.json
+data/rag_index/
 !data/.gitkeep
 **/references/
 data/rtl_project/lbist/controller_dataset.csv

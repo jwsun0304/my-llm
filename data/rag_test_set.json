@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "question": "X25519 가속기의 scalar multiplication은 어떤 알고리즘으로 구현되어 있나요?",
+    "expected_files": ["ECDH/mont_ladder.v", "ECDH/x25519_core.v", "ECDH/README.md"],
+    "keywords": ["Montgomery", "몽고메리", "ladder"]
+  },
+  {
+    "id": 2,
+    "question": "모듈러 역원(modular inverse)은 어떤 방식으로 계산하나요?",
+    "expected_files": ["ECDH/inversion_25519.v", "ECDH/README.md"],
+    "keywords": ["페르마", "Fermat", "square", "p-2"]
+  },
+  {
+    "id": 3,
+    "question": "PQC_KEM.c는 어떤 역할을 하는 코드인가요?",
+    "expected_files": ["ECDH/PQC_KEM.c", "ECDH/README.md"],
+    "keywords": ["AXI", "DMA", "호스트", "통신", "드라이버"]
+  },
+  {
+    "id": 4,
+    "question": "curve25519.v는 본인이 작성한 코드인가요?",
+    "expected_files": ["ECDH/README.md"],
+    "keywords": ["아니", "참고", "erbsen", "third", "출처", "본인 코드가 아니"]
+  },
+  {
+    "id": 5,
+    "question": "ECDH 가속기 검증에 어떤 테스트 벡터를 사용했나요?",
+    "expected_files": ["ECDH/README.md"],
+    "keywords": ["Wycheproof", "RFC 7748", "RFC 8037", "518"]
+  },
+  {
+    "id": 6,
+    "question": "이 LBIST 프로젝트에서 일반성 검증에 사용한 ISCAS'89 벤치마크 회로는 몇 개이고 이름이 뭔가요?",
+    "expected_files": ["lbist/README.md"],
+    "keywords": ["s1494", "s5378", "s9234", "s13207", "4개"]
+  },
+  {
+    "id": 7,
+    "question": "Adaptive-T 컨트롤러는 어떤 조건일 때 T를 늘리나요?",
+    "expected_files": ["lbist/README.md", "lbist/adaptive_controller.py"],
+    "keywords": ["Hamming", "HD", "saturation", "포화", "슬라이딩"]
+  },
+  {
+    "id": 8,
+    "question": "s5378에서 튜닝한 파라미터를 다른 회로에 재튜닝 없이 적용했을 때, Adaptive-T가 항상 Fixed-T를 이겼나요?",
+    "expected_files": ["lbist/README.md"],
+    "keywords": ["4개", "이겼", "일관되게", "647", "7,951", "12배"]
+  },
+  {
+    "id": 9,
+    "question": "등가 결함 collapsing으로 s5378의 결함 수가 몇 개에서 몇 개로 줄었나요?",
+    "expected_files": ["lbist/README.md"],
+    "keywords": ["6,016", "2,911", "51.6"]
+  },
+  {
+    "id": 10,
+    "question": "tune_adaptive.py의 튜닝 결과, 자동 튜닝된 Adaptive-T가 Best Fixed-T보다 항상 더 좋은 성능을 보였나요?",
+    "expected_files": ["lbist/README.md"],
+    "keywords": ["근소", "Fixed-T", "32", "95.595", "아니"]
+  },
+  {
+    "id": 11,
+    "question": "PRPG는 몇 비트 LFSR을 사용하나요?",
+    "expected_files": ["lbist/README.md", "lbist/prpg_misr.py"],
+    "keywords": ["16-bit", "16비트", "Galois"]
+  },
+  {
+    "id": 12,
+    "question": "이 LBIST 프로젝트는 실제 FPGA 보드나 상용 EDA 툴로 검증했나요?",
+    "expected_files": ["lbist/README.md"],
+    "keywords": ["아니", "Python", "필요하지 않", "무료"]
+  }
+]
