@@ -1,0 +1,13 @@
+id,question,lora_only_answer,lora_only_hit,lora_only_manual,rag_lora_answer,rag_lora_hit,rag_lora_manual
+1,X25519 scalar multiplication 알고리즘,이 알고리즘이 X25519 가속기를 위한 Scalar Multiplication 알고리즘을 제공합니다.,False,wrong_vague,Montgomery ladder 알고리즘,True,correct
+2,모듈러 역원 계산 방식,"gcd(a,m)=1 기반 설명, 7과 5 예시 등 완전히 다른(틀린) 방식 서술",False,hallucination,GCD(25519, N) 기반 설명 - 여전히 틀림(실제는 페르마 소정리),False,hallucination
+3,PQC_KEM.c 역할,AES 알고리즘의 키 생성 알고리즘(Kem)이라고 답변 - 완전히 틀림,False,hallucination,제공된 자료에서 근거를 찾을 수 없습니다,False,appropriate_refusal
+4,curve25519.v 본인 작성 여부,"저작권자인 ""김동현""이 작성했다고 답변 - 실존하지 않는 인물 이름을 지어냄",False,hallucination_dangerous,no,False,correct_but_terse
+5,ECDH 검증 테스트 벡터,AES-128/AES-192 키 크기라고 답변 - 완전히 무관한 내용,False,hallucination,RFC7748/Wycheproof 언급하나 둘 다 518개라고 오귀속,True,partial
+6,ISCAS'89 벤치마크 회로 개수/이름,존재하지 않는 ''LSB 회로''를 지어내 설명,True,hallucination_metric_false_positive,s1494/s5378/s9234 3개만 나열(s13207 누락),True,partial
+7,Adaptive-T가 T를 늘리는 조건,"환경 변화, 시스템 고장 등 무관한 일반 제어이론적 설명을 지어냄",False,hallucination,"calibration_patterns = T_init * 2.183... 같은 존재하지 않는 정밀해 보이는 상수를 날조",False,hallucination
+8,다중 회로 일반성 검증에서 Adaptive-T 항상 승리 여부,"네, 항상 Fixed-T를 이겼습니다 - 실제로 정확한 답변",True,correct,"모든 회로에서 향상, s5378 95.91%까지 정확히 인용 - 내용은 맞으나 키워드 불일치로 자동지표는 False",False,correct_metric_false_negative
+9,결함 collapsing 전후 개수(s5378),1개 결함을 2개로 분산 - 무의미한 오답,False,hallucination,1131개에서 867개로 - 실제 수치(6016->2911)와 무관한 날조된 숫자,False,hallucination
+10,tune_adaptive.py 튜닝이 Best Fixed-T보다 항상 좋았는지,"네, 항상 더 높았습니다 - 실제로는 근소하게 졌음(95.595 vs 94.581), 틀림",False,hallucination,"항상 더 좋았다고 답변, 틀림 - 하지만 ""Fixed-T"" 키워드 매칭으로 자동지표는 True",True,hallucination_metric_false_positive
+11,PRPG 비트 수,16비트,True,correct,PRPG는 16비트 LFSR을 사용합니다.,True,correct
+12,LBIST 실제 FPGA/상용EDA 검증 여부,"네 검증됨, 2018년3월~2019년4월 5개 FPGA보드 사용 - 날짜/보드 수까지 구체적으로 날조",False,hallucination_dangerous,제공된 자료에서 근거를 찾을 수 없습니다,False,incorrect_refusal
