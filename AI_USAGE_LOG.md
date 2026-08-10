@@ -92,6 +92,23 @@
   - batch 64→128로 2배 늘리자 peak 메모리도 정확히 약 2배(7.2GB→14.3GB)로 증가 — attention 연산량이 batch size에 선형적으로 비례한다는 예상과 일치. batch 128(14.3GB)이 이미 T4 가용 메모리(~15GB) 턱밑까지 차서, batch 256에서 바로 OOM 발생. → "왜 batch size를 64로 정했는가"라는 질문에 실측 데이터로 답변 가능 (더 큰 모델을 쓸 경우 batch size를 반드시 줄여야 하는 실질적 한계선을 직접 확인).
 - **검증/판단**: Optuna의 TPE 샘플러 기본 설정(trial 6개)은 탐색 초반이라 사실상 랜덤에 가까운 샘플링이었음 — "최적값을 찾았다"보다 "여러 크기에서 성능-비용 관계의 경향을 관찰했다"는 것으로 결과를 해석하는 게 정확하다고 판단. Optuna 결과의 `best_trial`을 그대로 "최적 모델"이라 부르지 않고 트레이드오프 표 전체를 근거로 삼음.
 
+## 2026-08-10: Stage 2.5 BPE 토크나이저 구현 + char-level 비교
+
+- **문제**: Stage 1~3까지는 char-level 토크나이저만 써봤는데, "왜 char-level을 골랐는가"에 실질적 답이 "간단해서"뿐이었음. 실제 LLM들이 왜 subword(BPE) 토크나이저를 쓰는지 직접 실험으로 이해하고 싶었음. (v4→v5 계획 수정 때 "LLM 전문가가 파고들 때 방어력이 약한 지점"으로 스스로 지적한 부분.)
+- **왜 AI 필요**: minBPE 스타일 byte-pair encoding(merge 학습 → encode/decode)을 처음부터 구현하는 코드(`src/bpe.py`)와, 서로 다른 vocab 크기의 두 토크나이저를 동일 모델 설정으로 학습해 공정 비교하는 스크립트(`src/compare_tokenizer.py`) 작성을 Claude Code에 요청.
+- **AI 활용**: `bpe.py`(BPE 학습/인코딩/디코딩, encode-decode 왕복 정확성 assert 포함), `prepare_data_bpe.py`(vocab_size=512로 학습 데이터 생성), `compare_tokenizer.py`(char vs bpe를 동일 4-layer/256-dim 설정으로 1500 iter씩 학습).
+- **결과** (`results/tokenizer_compare.csv`):
+
+| tokenizer | vocab_size | chars/token | 문맥(256 토큰 기준 실제 글자 수) | val loss (원시) | **bits-per-char (공정 비교)** |
+|---|---|---|---|---|---|
+| char | 65 | 1.000 | 256자 | 1.5852 | 2.287 |
+| bpe | 512 | 1.963 | 502.5자 | 2.9952 | **2.2013** |
+
+- **해석**:
+  - 표면적 val loss만 보면 BPE(2.995)가 char-level(1.585)보다 훨씬 나빠 보이지만, 이는 vocab 크기가 다른 두 모델의 cross-entropy를 그대로 비교하는 것이 잘못된 방법이기 때문 — vocab이 클수록 무작위 초기 loss 자체가 높음(ln(512)≈6.29 vs ln(65)≈4.17, 실제 iter 0 값 6.2882/4.1841과 일치). 이를 바로잡기 위해 **bits-per-character**(= loss_nats / chars_per_token / ln(2))로 정규화해서 비교해야 함을 직접 판단하고 적용.
+  - 정규화 후에는 BPE(2.201 bpc)가 char-level(2.287 bpc)보다 **더 낮음(더 좋음)** — 심지어 BPE 모델이 아직 수렴 중(iter 1499에도 loss가 눈에 띄게 계속 감소 중)인데도 이미 앞섬. 게다가 `block_size=256`(토큰 수 고정)이 실제로 커버하는 문맥 길이가 char-level은 256자, BPE는 502.5자로 거의 2배 — 동일한 attention 연산 비용(둘 다 T=256)으로 2배 넓은 문맥을 확보. → 실제 LLM들이 char-level이 아니라 subword 토크나이저를 쓰는 이유를 숫자로 재현.
+- **검증/판단**: encode한 토큰을 다시 decode했을 때 원문과 100% 일치하는지(`roundtrip check`)를 `bpe.py`에 직접 assert로 넣어, 토크나이저 구현 자체의 정확성을 학습 실험 전에 먼저 검증함.
+
 ## (진행하며 계속 추가)
 
 - 도메인 특화(RAG) 단계에서 데이터 선정 기준과 그 판단 근거 기록.
